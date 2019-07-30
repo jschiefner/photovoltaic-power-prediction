@@ -1,6 +1,6 @@
 import pandas as pd
 
-def file_import(power_file, weather_file):
+def load(power_file, weather_file):
     """
     Imports data from a power file and an associated weather file
     Such files can be downloaded from 'http://solar.uq.edu.au/user/reportPower.php'

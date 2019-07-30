@@ -2,9 +2,7 @@ import os
 import pandas as pd
 import requests
 
-def api_import(system_capacity=4, module_type=0,
-            losses=14, array_type=1, tilt=25, azimuth=180,
-            address=None, lat=51.9607, lon=7.6261, radius=0):
+def load(system_capacity=4, module_type=0, losses=14, array_type=1, tilt=25, azimuth=180, address=None, lat=51.9607, lon=7.6261, radius=0):
     """
     Imports data from PVWatts using the pypvwatts package.
     Only fields that are of importance for this forecasting purpose
@@ -12,7 +10,6 @@ def api_import(system_capacity=4, module_type=0,
     """
     api_key = os.environ['PVWATTS_API_KEY']
     params = {
-        'format': 'json',
         'api_key': api_key,
         'system_capacity': system_capacity,
         'module_type': module_type,
@@ -24,7 +21,8 @@ def api_import(system_capacity=4, module_type=0,
         'lat': lat,
         'lon': lon,
         'radius': radius,
-        'timeframe': 'hourly'
+        'timeframe': 'hourly',
+        'dataset': 'tmy3'
     }
 
     response = requests.get('https://developer.nrel.gov/api/pvwatts/v6.json', params)
