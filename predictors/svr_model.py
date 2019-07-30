@@ -3,6 +3,17 @@ from sklearn.svm import SVR
 from sklearn.preprocessing import StandardScaler
 
 class SVRModel:
+    """
+    ---------------------------
+    ###### SVR Predictor ######
+    ---------------------------
+
+    Support Vector Regression Model based on
+    the Support Vector Machine implementation of Scikit-Learn
+
+    base_data: DataFrame. One whole dataset. Used to adjust the scaling parameters.
+    scaling: Boolean. Whether the data should be scaled before using the SVR algorithm. default = true
+    """
     def __init__(self, base_data, scaling=True):
         self._base_data = base_data
         self._scalers = {}
@@ -22,6 +33,17 @@ class SVRModel:
             self._scalers[key].fit(self._base_data[key].values.reshape(-1, 1))
 
     def fit(self, data, filter=None, kernel='rbf', C=1e3, gamma=0.1, epsilon=0.1):
+        """
+        Fit the model with a dataset.
+
+        data: DataFrame. Dataset including the training data
+        filter: list. Set the features that you want to use for the regression (optional)
+
+        kernel: String. Set the kernel used by the SVR algorithm (optional). default = 'rbf'
+        C: float. Penalty Parameter (optional). default = 1e3
+        gamma: float. Kernel coefficient (optional). default = 0.1
+        epsilon: float. Epsilon-tube distance (optional). default = 0.1
+        """
         if filter:
             filter.append('power')
             self._filter = filter
@@ -42,6 +64,11 @@ class SVRModel:
         self.svr.fit(training_data.drop('power', axis=1).values, training_data['power'])
 
     def predict(self, data):
+        """
+        Make a prediction based on the features specified
+
+        data: DataFrame. Dataset including all test features
+        """
         self.testing_original = data.filter(self._filter)
 
         if self.scaling:
