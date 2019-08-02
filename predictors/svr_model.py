@@ -1,6 +1,16 @@
 import pandas as pd
 from sklearn.svm import SVR
 from sklearn.preprocessing import StandardScaler
+import warnings
+
+def validate_init(base_data, scaling):
+    if base_data is None and scaling:
+        raise TypeError('if scaling is activated, a dataframe containing sample data must be provided for fitting the scaler')
+
+def fit_scaler(data):
+    scaler = StandardScaler()
+    scaler.fit(data)
+    return scaler
 
 class SVRModel:
     """
@@ -11,26 +21,19 @@ class SVRModel:
     Support Vector Regression Model based on
     the Support Vector Machine implementation of Scikit-Learn
 
-    base_data: DataFrame. One whole dataset. Used to adjust the scaling parameters.
-    scaling: Boolean. Whether the data should be scaled before using the SVR algorithm. default = true
+    base_data: DataFrame. One whole dataset. This is only used to adjust the scaling parameters (optional).
+                          Must be specified if scaling is activated.
+    scaling: Boolean. Whether the data should be scaled before using the SVR algorithm (optional). default = true
     """
-    def __init__(self, base_data, scaling=True):
+    def __init__(self, base_data=None, scaling=True):
+        validate_init(base_data, scaling)
         self._base_data = base_data
-        self._scalers = {}
-        self._filter = list(base_data.keys())
-        self._fit_scalers()
+        self._scaler = None
+        self._filter = None
 
-        self.training_original = None
-        self.training_scaled = None
-        self.testing_original = None
-        self.testing_scaled = None
+        self.model = None
         self.scaling = scaling
         self.prediction = None
-
-    def _fit_scalers(self):
-        for key in self._base_data:
-            self._scalers[key] = StandardScaler()
-            self._scalers[key].fit(self._base_data[key].values.reshape(-1, 1))
 
     def fit(self, data, filter=None, kernel='rbf', C=1e3, gamma=0.1, epsilon=0.1):
         """
@@ -44,46 +47,40 @@ class SVRModel:
         gamma: float. Kernel coefficient (optional). default = 0.1
         epsilon: float. Epsilon-tube distance (optional). default = 0.1
         """
-        if filter:
-            filter.append('power')
-            self._filter = filter
-
-        self.training_original = data.filter(self._filter)
+        if filter: filter.append('power')
+        else: filter = list(data.keys())
+        self._filter = filter
+        data = data.filter(filter)
 
         if self.scaling:
-            self.training_scaled = pd.DataFrame(index=self.training_original.index)
-            for key in self.training_original:
-                scaler = self._scalers[key]
-                values = self.training_original[key].values.reshape(-1, 1)
-                self.training_scaled[key] = scaler.transform(values)
-            training_data = self.training_scaled
+            self._scaler = fit_scaler(self._base_data.filter(filter))
+            scaled_values = self._scaler.transform(data)
+            data_frame = pd.DataFrame(scaled_values, index=data.index, columns=data.columns)
         else:
-            training_data = self.training_original
+            data_frame = data
 
-        self.svr = SVR(kernel=kernel, C=C, gamma=gamma, epsilon=epsilon)
-        self.svr.fit(training_data.drop('power', axis=1).values, training_data['power'])
+        self.model = SVR(kernel=kernel, C=C, gamma=gamma, epsilon=epsilon)
+        self.model.fit(data_frame.drop('power', axis=1), data_frame.power)
 
     def predict(self, data):
         """
-        Make a prediction based on the features specified
+        Make a prediction based on the features specified. Returns the predicted values as a dataframe
+        together with the testing data. This dataframe can also be accessed with 'prediction'.
 
         data: DataFrame. Dataset including all test features
         """
-        self.testing_original = data.filter(self._filter)
+        data = data.filter(self._filter)
 
         if self.scaling:
-            self.testing_scaled = pd.DataFrame(index=self.testing_original.index)
-            for key in self.testing_original:
-                scaler = self._scalers[key]
-                values = self.testing_original[key].values.reshape(-1, 1)
-                self.testing_scaled[key] = scaler.transform(values)
-            testing_data = self.testing_scaled
+            scaled_values = self._scaler.transform(data)
+            data_frame = pd.DataFrame(scaled_values, index=data.index, columns=data.columns)
         else:
-            testing_data = self.testing_original
+            data_frame = data
 
-        prediction = self.svr.predict(testing_data.drop('power', axis=1))
+        prediction = self.model.predict(data_frame.drop('power', axis=1))
+        data_frame['power'] = prediction
         if self.scaling:
-            self.prediction = self._scalers['power'].inverse_transform(prediction)
-        else:
-            self.prediction = prediction
-        return self.prediction
+            inversed = self._scaler.inverse_transform(data_frame)
+            data_frame = pd.DataFrame(inversed, index=data_frame.index, columns=data_frame.columns)
+        self.prediction = data_frame
+        return data_frame
