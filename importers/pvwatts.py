@@ -4,7 +4,7 @@ import requests
 
 def load(system_capacity=4, module_type=0, losses=14, array_type=0, tilt=25, azimuth=180, address=None, lat=51.9607, lon=7.6261, radius=0):
     """
-    Imports data from PVWatts using the pypvwatts package.
+    Imports data from PVWatts using the requests package.
     Only fields that are of importance for this forecasting purpose
     can be specified.
     """
@@ -35,3 +35,19 @@ def load(system_capacity=4, module_type=0, losses=14, array_type=0, tilt=25, azi
     data['time'] = pd.date_range('20190101', periods=len(data), freq='H')
     data.set_index('time', inplace=True)
     return data
+
+def bulk_load_from_list(filepath, range=None):
+    """
+    Bulk Imports data from PVWatts using the load method.
+
+    filepath: str. Path to a csv file containing the columns 'city', 'lat' and 'lon'
+    range: tuple. range of cities to load
+    """
+    list = pd.read_csv('data/station_export.csv')
+    if not range: range = (0, len(list))
+    start, stop = range
+    list = list[start:stop]
+    cities = {}
+    for index, (city, lat, lon) in enumerate(list.values):
+        cities[city] = load(lat=lat, lon=lon)
+    return cities

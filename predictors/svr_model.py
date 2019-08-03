@@ -42,7 +42,7 @@ class SVRModel:
         data: DataFrame. Dataset including the training data
         filter: list. Set the features that you want to use for the regression (optional)
 
-        kernel: String. Set the kernel used by the SVR algorithm (optional). default = 'rbf'
+        kernel: str. Set the kernel used by the SVR algorithm (optional). default = 'rbf'
         C: float. Penalty Parameter (optional). default = 1e3
         gamma: float. Kernel coefficient (optional). default = 0.1
         epsilon: float. Epsilon-tube distance (optional). default = 0.1
