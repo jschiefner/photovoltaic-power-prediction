@@ -2,7 +2,7 @@ import os
 import pandas as pd
 import requests
 
-def load(system_capacity=4, module_type=0, losses=14, array_type=1, tilt=25, azimuth=180, address=None, lat=51.9607, lon=7.6261, radius=0):
+def load(system_capacity=4, module_type=0, losses=14, array_type=0, tilt=25, azimuth=180, address=None, lat=51.9607, lon=7.6261, radius=0):
     """
     Imports data from PVWatts using the pypvwatts package.
     Only fields that are of importance for this forecasting purpose
