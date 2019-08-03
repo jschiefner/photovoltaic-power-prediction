@@ -167,5 +167,6 @@ class ARIMAModel:
                 data_frame['power'] = data_upscaled
             else:
                 data_frame['power'] = prediction
+        data_frame['power'] = data_frame.power.clip(0)
         self.prediction = data_frame
         return data_frame

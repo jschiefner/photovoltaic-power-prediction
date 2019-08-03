@@ -82,5 +82,6 @@ class SVRModel:
         if self.scaling:
             inversed = self._scaler.inverse_transform(data_frame)
             data_frame = pd.DataFrame(inversed, index=data_frame.index, columns=data_frame.columns)
+        data_frame['power'] = data_frame.power.clip(0)
         self.prediction = data_frame
         return data_frame
