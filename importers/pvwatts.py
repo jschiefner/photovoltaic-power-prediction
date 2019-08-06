@@ -43,7 +43,7 @@ def bulk_load_from_list(filepath, range=None):
     filepath: str. Path to a csv file containing the columns 'city', 'lat' and 'lon'
     range: tuple. range of cities to load
     """
-    list = pd.read_csv('data/station_export.csv')
+    list = pd.read_csv(filepath)
     if not range: range = (0, len(list))
     start, stop = range
     list = list[start:stop]
@@ -51,3 +51,14 @@ def bulk_load_from_list(filepath, range=None):
     for index, (city, lat, lon) in enumerate(list.values):
         cities[city] = load(lat=lat, lon=lon)
     return cities
+
+def load_city_from_list(filepath, city):
+    """
+    Import a specific City
+
+    filepath: str. Path to a csv file containing the columns 'city', 'lat' and 'lon'
+    city: str. City name
+    """
+    list = pd.read_csv(filepath).set_index('city')
+    city = list.loc[city]
+    return load(lat=city.lat, lon=city.lon)
