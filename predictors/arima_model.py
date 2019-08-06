@@ -78,7 +78,7 @@ class ARIMAModel:
             self.model.fit(data.power)
 
 
-    def fit_auto(self, data, p, q, P, Q, d, D, filter=None, use_exogenous=True):
+    def fit_auto(self, data, p, q, P, Q, d=None, D=None, filter=None, use_exogenous=True):
         """
         Fit the model with a dataset. This method finds suitable hyperparameters in a specified range.
         If you want to fit a model with specific parameters use the 'fit' method instead.
