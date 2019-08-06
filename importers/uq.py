@@ -21,6 +21,7 @@ def load(power_file, weather_file):
     data = weather.loc[~weather.index.duplicated(keep='first')] # remove duplicates
     data = data.fillna(0) # fill NaN values with zeros, because power is only specified for daytime
     data = data.resample('H').mean() # resample with hourly average
+    data = data.fillna(2) # necessary again after resampling
     data = data.round(2) # cutoff unnessecary decimal points
     data.drop('insolation', axis=1, inplace=True)
     return data
