@@ -8,7 +8,22 @@ I recommend [pipenv]([https://github.com/pypa/pipenv]) to setup the project. Wit
 
 If you don't use pipenv, dependencies are specified in the [Pipfile](Pipfile) and the versions i use can be found in the [Pipfile.lock](Pipfile.lock).
 
-To use the PVWatts Service described later you need to obtain an API key. Then, you have to set it as environment variable. If you use pipenv this can be done in a `.env` file.
+To use the PVWatts Service described later you need to obtain an API key. Then, you have to set it as environment variable (or put it in the code directly). If you use pipenv this can be done in a `.env` file.
+
+Examples on how to use the project can be found in the example files in the root directory. You can directly run those files ***after*** completing the necessary steps to obtain data described in the next section.
+
+```
+pipenv run python example_arima_pvwatts.py
+pipenv run python example_arima_uq.py
+pipenv run python example_svr_pvwatts.py
+pipenv run python example_svr_uq.py
+```
+
+For plotting with matplotlib, pandas issues a future warning, so i put the following line after the imports:
+
+``` python
+from pandas.plotting import register_matplotlib_converters; register_matplotlib_converters()
+```
 
 ## Load Data
 
@@ -26,7 +41,7 @@ Prepared data from PVWatts looks similar to this:
 | 2019-06-20 09:00:00 | 23.0 | 4.1  | 2647.271 |
 | 2019-06-20 10:00:00 | 24.0 | 2.6  | 2838.976 |
 
-It can be obtained via the public [PVWatts API](https://developer.nrel.gov/docs/solar/pvwatts/v6/). In order to get an [API key](https://developer.nrel.gov/docs/api-key/) you need to sign up at the NREL Developer Network. The API key then needs to be put in the environment variable `PVWATTS_API_KEY`. When that is done you can use
+It can be obtained via the public [PVWatts API](https://developer.nrel.gov/docs/solar/pvwatts/v6/). In order to get an [API key](https://developer.nrel.gov/docs/api-key/) you need to sign up at the NREL Developer Network. The API key then needs to be put in the environment variable `PVWATTS_API_KEY`. Alternatively, you can insert it into [pvwatts](importers/pvwatts.py) directly. When that is done you can use
 
 ``` python
 import importers.pvwatts as pw
@@ -82,6 +97,8 @@ training_data = data['20190601':'20190607'] # first week of june 2019
 testing_data = data['20190608':'20190614'] # second week of june 2019
 ```
 
+Here the dates are converted from strings implicitly. For example `'20190601'` depicts 2019/06/01 or June 01, 2019.
+
 ### Support Vector Regresion
 
 This algorithm uses the [Scikit-Learn implementation](https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVR.html) of SVR which is based on libsvm. To use it the following class is available:
@@ -95,8 +112,8 @@ Making a prediction without scaling the data:
 ``` python
 model = SVRModel(scaling=False)
 model.fit(training_data, kernel='rbf', C=1e3, gamma=0.1, epsilon=0.1)
-model.predict(testing_data) # returns the prediction
-model.prediction # use this to access the prediction
+model.predict(testing_data) # returns the prediction data frame containing the testing features and the power prediction
+model.prediction.power # use this to access the power prediction
 ```
 
 Filtering out the `power` column from the `testing_data` frame is not necessary, the `SVRModel` class does that automatically. Optionally it is possible to pass `filter=['airtemp', 'humidity']` or similar to `fit` to restrict the features used for forecasting. It is not necessary to filter the data manually this way.
@@ -125,7 +142,7 @@ Now to make a prediction without using exogenous variables do the following:
 model = ARIMAModel() # scaling is set to true automatically
 model.fit(training_data, order=(2,1,4), seasonal_order(3,1,2, 24), use_exogenous=False)
 model.predict(hours=48)  # returns the prediction
-model.prediction # use this to access the prediction
+model.prediction.power # use this to access the power predictionn
 ```
 
 Providing testing features is not necessary because the model was fit without exogenous variables. In this case, the returned DataFrame will only have a `power` column. The `order` specifies the `(p,d,q)` parameters of the model. The `seasonal_order` specifies the `(P,D,Q,s)` parameters. The scaling parameter can be set when creating the model, by default it is set to `True` but it can be unset with:
