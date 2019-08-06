@@ -2,15 +2,16 @@ import os
 import pandas as pd
 import requests
 
+API_KEY = os.environ['PVWATTS_API_KEY']
+
 def load(system_capacity=4, module_type=0, losses=14, array_type=0, tilt=25, azimuth=180, address=None, lat=51.9607, lon=7.6261, radius=0):
     """
     Imports data from PVWatts using the requests package.
     Only fields that are of importance for this forecasting purpose
     can be specified.
     """
-    api_key = os.environ['PVWATTS_API_KEY']
     params = {
-        'api_key': api_key,
+        'api_key': API_KEY,
         'system_capacity': system_capacity,
         'module_type': module_type,
         'losses': losses,
