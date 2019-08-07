@@ -44,8 +44,8 @@ Prepared data from PVWatts looks similar to this:
 It can be obtained via the public [PVWatts API](https://developer.nrel.gov/docs/solar/pvwatts/v6/). In order to get an [API key](https://developer.nrel.gov/docs/api-key/) you need to sign up at the NREL Developer Network. The API key then needs to be put in the environment variable `PVWATTS_API_KEY`. Alternatively, you can insert it into [pvwatts](importers/pvwatts.py) directly. When that is done you can use
 
 ``` python
-import importers.pvwatts as pw
-data = pw.load()
+from importers import pvwatts
+data = pvwatts.load()
 ```
 
 This calls the API and parses the result as a pandas DataFrame which can be passed to the forecasting modules. You can also pass the following optional parameters to `load`:
@@ -67,20 +67,20 @@ For information on these parameters please refer to the PVWatts V6 [API Descript
 
 Prepared data from the UQ Solar live feed looks similar to this:
 
-|      time          | airtemp | humidity | windspeed | winddirection |   power   |
-|--------------------|:-------:|:--------:|:---------:|:-------------:|:---------:|
-|2015-06-20 07:00:00 |  9.27   |   75.24  |    1.72   |     191.47    | 25302.00  |
-|2015-06-20 08:00:00 |  11.28  |   68.72  |    2.14   |     201.45    | 78240.83  |
-|2015-06-20 09:00:00 |  13.38  |   59.02  |    2.59   |     214.77    | 128523.08 |
-|2015-06-20 10:00:00 |  14.49  |   54.19  |    2.92   |     201.67    | 162968.83 |
-|2015-06-20 11:00:00 |  15.65  |   51.89  |    2.34   |     203.23    | 172535.83 |
+|         time        | airtemp | humidity | windspeed | winddirection |   power   |
+|---------------------|:-------:|:--------:|:---------:|:-------------:|:---------:|
+| 2015-06-20 07:00:00 |  9.27   |   75.24  |    1.72   |     191.47    | 25302.00  |
+| 2015-06-20 08:00:00 |  11.28  |   68.72  |    2.14   |     201.45    | 78240.83  |
+| 2015-06-20 09:00:00 |  13.38  |   59.02  |    2.59   |     214.77    | 128523.08 |
+| 2015-06-20 10:00:00 |  14.49  |   54.19  |    2.92   |     201.67    | 162968.83 |
+| 2015-06-20 11:00:00 |  15.65  |   51.89  |    2.34   |     203.23    | 172535.83 |
 
 It can downloaded on the [live feed](http://solar.uq.edu.au/user/reportPower.php) website. Choose a `PV Site` and a `PV Array` from the sidebar on the right. Then click `Download Data` and then `Download Daily Logs`. From there you can specify a date range (I recommend a year), and then download a `Power & Energy` file as well as a `Weather` file. Make sure you download both with the same date ranges specified.
 
 Now you can use
 
 ``` python
-import importers.uq as uq
+from importers import uq
 data = uq.load('power_file.csv', 'weather_file.csv')
 ```
 
