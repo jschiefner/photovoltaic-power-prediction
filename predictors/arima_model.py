@@ -28,6 +28,8 @@ class ARIMAModel:
     -----------------------------
 
     ARIMA Model based on the pmdarima library
+
+    scaling: Boolean. Whether the data should be scaled before using the ARIMA algorithm (optional). default = true
     """
     def __init__(self, scaling=True):
         self.training_data = None
@@ -58,6 +60,7 @@ class ARIMAModel:
 
         if use_exogenous:
             if filter:
+                filter = filter.copy()
                 filter.append('power')
                 self._filter = filter
                 data = data.filter(self._filter)
@@ -78,7 +81,7 @@ class ARIMAModel:
             self.model.fit(data.power)
 
 
-    def fit_auto(self, data, p, q, P, Q, d=None, D=None, filter=None, use_exogenous=True):
+    def fit_auto(self, data, p, q, P, Q, d=None, D=None, trace=True, filter=None, use_exogenous=True):
         """
         Fit the model with a dataset. This method finds suitable hyperparameters in a specified range.
         If you want to fit a model with specific parameters use the 'fit' method instead.
@@ -92,6 +95,7 @@ class ARIMAModel:
                          to determine a suitable value (optional)
         D: positive int. Amount of seasonal differencing. If left out, an algorithm will be used
                          to determine a suitable value (optional)
+        trace: Boolean. Whether all attempts of finding good parameters should be printed (optional). default = True
         filter: list. Set the features that you want to use for the regression (optional)
                       will be ignored if use_exogenous is False
         use_exogenous: Boolean. Set whether exogenous features from 'data' should
@@ -103,6 +107,7 @@ class ARIMAModel:
 
         if use_exogenous:
             if filter:
+                filter = filter.copy()
                 filter.append('power')
                 self._filter = filter
                 data = data.filter(self._filter)
@@ -115,7 +120,7 @@ class ARIMAModel:
             with warnings.catch_warnings():
                 warnings.simplefilter('ignore')
                 self.model = auto_arima(data.power, start_p=start_p, start_q=start_q, max_p=max_p, max_q=max_q,
-                                        start_P=start_P, start_Q=start_Q, max_P=max_P, max_Q=max_Q, m=24, d=d, D=D, trace=True,
+                                        start_P=start_P, start_Q=start_Q, max_P=max_P, max_Q=max_Q, m=24, d=d, D=D, trace=trace,
                                         with_intercept=False, exogenous=data.drop('power', axis=1))
         else:
             data = data.filter(['power'])

@@ -47,7 +47,9 @@ class SVRModel:
         gamma: float. Kernel coefficient (optional). default = 0.1
         epsilon: float. Epsilon-tube distance (optional). default = 0.1
         """
-        if filter: filter.append('power')
+        if filter:
+            filter = filter.copy()
+            filter.append('power')
         else: filter = list(data.keys())
         self._filter = filter
         data = data.filter(filter)
