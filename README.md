@@ -63,6 +63,12 @@ This calls the API and parses the result as a pandas DataFrame which can be pass
 
 For information on these parameters please refer to the PVWatts V6 [API Description](https://developer.nrel.gov/docs/solar/pvwatts/v6/). All parameters have default values so calling the method without parameters is possible as well. The return data is indexed using a DateTimeIndex. Since PVWatts does not specify dates but always returns data for a whole year, the year 2019 will be set fixed for each DataFrame returned from this module.
 
+If you have a PVWatts json response saved in a json file it is also possible to parse that file directly using the following convenience method:
+
+``` python
+pvwatts.load_from_json('filepath.json')
+```
+
 ### UQ Solar Photovoltaic Data
 
 Prepared data from the UQ Solar live feed looks similar to this:
