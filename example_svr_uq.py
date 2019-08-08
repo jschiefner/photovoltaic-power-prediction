@@ -1,4 +1,4 @@
-import importers.uq as uq
+from importers import uq
 from predictors.svr_model import SVRModel
 from evaluation.error_terms import mse, rmse, nrmse
 import matplotlib.pyplot as plt
@@ -24,7 +24,7 @@ print(f'nRMSE: {nrmse(testing.power, model.prediction.power)}')
 
 # plot testing features
 plt.plot(testing.airtemp, color='red')
-plt.plot(testing.humidity, color='red')
+plt.plot(testing.humidity, color='blue')
 plt.show()
 
 # plot prediction and expected power output

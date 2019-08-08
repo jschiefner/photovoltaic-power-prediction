@@ -1,4 +1,4 @@
-import importers.pvwatts as pw
+from importers import pvwatts
 from predictors.svr_model import SVRModel
 from evaluation.error_terms import mse, rmse, nrmse
 import matplotlib.pyplot as plt

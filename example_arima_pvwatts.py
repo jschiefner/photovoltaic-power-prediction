@@ -1,4 +1,4 @@
-import importers.pvwatts as pw
+from importers import pvwatts
 from predictors.arima_model import ARIMAModel
 from evaluation.error_terms import mse, rmse, nrmse
 import matplotlib.pyplot as plt
