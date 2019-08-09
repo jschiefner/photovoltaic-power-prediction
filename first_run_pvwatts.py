@@ -90,7 +90,7 @@ for filter in features:
 df.loc['average'] = df.mean().round(2)
 
 print('--------------------------------')
-path = 'out/pvwatts/berlin.csv'
+path = 'out/pvwatts/first.csv'
 print(f'saving dataframe to {path}')
 df.to_csv(path)
 print(f'run finished at {datetime.now()}')
