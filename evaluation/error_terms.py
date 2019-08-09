@@ -1,5 +1,5 @@
 from math import sqrt
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_squared_error, r2_score
 
 def mse(y_true, y_pred):
     """
@@ -19,8 +19,8 @@ def rmse(y_true, y_pred):
     y_true: series. Expected values
     y_pred: series. Predicted values
     """
-    output = mse(y_true, y_pred)
-    return round(sqrt(output), 2)
+    result = mean_squared_error(y_true, y_pred)
+    return round(sqrt(result), 2)
 
 def nrmse(y_true, y_pred):
     """
@@ -30,5 +30,15 @@ def nrmse(y_true, y_pred):
     y_true: series. Expected values
     y_pred: series. Predicted values
     """
-    output = rmse(y_true, y_pred)
-    return round(output / y_true.mean(), 2)
+    result = sqrt(mean_squared_error(y_true, y_pred))
+    return round(result / y_true.mean(), 2)
+
+def r2(y_true, y_pred):
+    """
+    calculates the r2 score or coefficient of determination for two
+    series using the r2_score implementation of sklearn
+
+    y_true: series. Expected values
+    y_pred: series. Predicted values
+    """
+    return round(r2_score(y_true, y_pred), 2)
