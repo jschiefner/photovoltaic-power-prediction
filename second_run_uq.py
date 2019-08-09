@@ -88,13 +88,13 @@ print('--------------------------------')
 print()
 
 df_rmse.loc['average'] = df_rmse.mean().round(2)
-df_rmse.to_csv('out/uq/second_rmse.csv')
+df_rmse.to_csv('out/uq/second/rmse.csv')
 
 df_nrmse.loc['average'] = df_nrmse.mean().round(2)
-df_nrmse.to_csv('out/uq/second_nrmse.csv')
+df_nrmse.to_csv('out/uq/second/nrmse.csv')
 
 print('--------------------------------')
-print('saved dataframes to out/uq/second_(n)rmse.csv')
+print('saved dataframes to out/uq/second/(n)rmse.csv')
 print(f'run finished at {datetime.now()}')
 print('--------------------------------')
 print()
