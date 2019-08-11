@@ -15,9 +15,9 @@ df_rmse = pd.DataFrame(index=['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', '
 df_nrmse = df_rmse.copy()
 
 filter = ['airtemp', 'humidity']
-order = (2,0,1)
-seasonal_order = (2,0,1,24)
-# p, q, P, Q = (1,3), (1,3), (1,3), (1,3)
+# order = (2,0,1)
+# seasonal_order = (2,0,1,24)
+p, q, P, Q = (1,3), (1,3), (1,3), (1,3)
 datestrings = [
     ['jan', ['20140104', '20140131', '20140201', '20140202']],
     ['feb', ['20140201', '20140228', '20140301', '20140302']],
@@ -38,7 +38,7 @@ print('--------------------------------')
 print('run started at')
 print(datetime.now())
 print(f'using filter: {filter}')
-print(f'ARIMA order={order}; seasonal_order={seasonal_order}')
+# print(f'ARIMA order={order}; seasonal_order={seasonal_order}')
 print('--------------------------------')
 print()
 
@@ -53,9 +53,9 @@ for location, [data, base_data] in {'edwards': [edwards, edwards_base], 'car_par
         print(f'fitting ARIMA model for location {location} and month {month} at {datetime.now()}')
         try:
             arima = ARIMAModel(scaling=True)
-            arima.fit(training, order=order, seasonal_order=seasonal_order, filter=filter, use_exogenous=True)
-            # arima.fit_auto(training, p=p, q=q, P=P, Q=Q, d=0, D=0, filter=filter, trace=False, use_exogenous=True)
-            # print(f'successfully fitted ARIMA model with order={arima.model.order}; seasonal_order={arima.model.seasonal_order}')
+            # arima.fit(training, order=order, seasonal_order=seasonal_order, filter=filter, use_exogenous=True)
+            arima.fit_auto(training, p=p, q=q, P=P, Q=Q, d=0, D=0, filter=filter, trace=False, use_exogenous=True)
+            print(f'successfully fitted ARIMA model with order={arima.model.order}; seasonal_order={arima.model.seasonal_order}')
             prediction = arima.predict(testing_data=testing)
             error_rmse = rmse(testing.power, prediction.power)
             error_nrmse = nrmse(testing.power, prediction.power)
