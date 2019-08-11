@@ -6,9 +6,9 @@ import warnings
 
 API_KEY = os.environ['PVWATTS_API_KEY']
 
-def _json_to_dataframe(json):
+def json_to_dataframe(json, keys=['ac', 'tamb', 'wspd']):
     outputs = json['outputs']
-    data = {key: outputs[key] for key in ['ac', 'tamb', 'wspd']}
+    data = {key: outputs[key] for key in keys}
     data['power'] = data.pop('ac')
     data = pd.DataFrame(data)
     data['time'] = pd.date_range('20190101', periods=len(data), freq='H')
@@ -39,15 +39,16 @@ def load(system_capacity=4, module_type=0, losses=14, array_type=0, tilt=25, azi
     }
 
     response = requests.get('https://developer.nrel.gov/api/pvwatts/v6.json', params)
+    print(response.request.url)
     json = response.json()
     if not suppress_warnings:
         if json['errors']: warnings.warn(f'API ERROR: {json["errors"]}')
         if json['warnings']: warnings.warn(f'API WARNING: {json["warnings"]}')
     response.raise_for_status()
     print(f"loaded {json['station_info']['city']}")
-    return _json_to_dataframe(json)
+    return json_to_dataframe(json)
 
-def load_from_json(filepath):
+def load_from_json(filepath, return_json=False):
     """
     Imports PVWatts data that has been downloaded and stored in a json file
 
@@ -56,7 +57,10 @@ def load_from_json(filepath):
     """
     with open(filepath) as file:
         data = json.load(file)
-    return _json_to_dataframe(data)
+    if return_json:
+        return data
+    else:
+        return json_to_dataframe(data)
 
 def bulk_load_from_list(filepath, range=None):
     """

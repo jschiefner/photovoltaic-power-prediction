@@ -1,6 +1,6 @@
 import pandas as pd
 
-def load(power_file, weather_file):
+def load(power_file, weather_file, with_insolation=False):
     """
     Imports data from a power file and an associated weather file
     Such files can be downloaded from 'http://solar.uq.edu.au/user/reportPower.php'
@@ -23,5 +23,5 @@ def load(power_file, weather_file):
     data = data.resample('H').mean() # resample with hourly average
     data = data.fillna(0) # necessary again after resampling
     data = data.round(2) # cutoff unnessecary decimal points
-    data.drop('insolation', axis=1, inplace=True)
+    if not with_insolation: data.drop('insolation', axis=1, inplace=True)
     return data
