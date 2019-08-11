@@ -31,7 +31,9 @@ def nrmse(y_true, y_pred):
     y_pred: series. Predicted values
     """
     result = sqrt(mean_squared_error(y_true, y_pred))
-    return round(result / y_true.mean(), 2)
+    result = round(result / y_true.mean(), 2)
+    if result > 3 or result < -3: raise RuntimeError(f'error nrmse {result} out of bounds')
+    return result
 
 def r2(y_true, y_pred):
     """
@@ -41,4 +43,6 @@ def r2(y_true, y_pred):
     y_true: series. Expected values
     y_pred: series. Predicted values
     """
-    return round(r2_score(y_true, y_pred), 2)
+    result = round(r2_score(y_true, y_pred), 2)
+    if result > 3 or result < -3: raise RuntimeError(f'error r2 {result} out of bounds')
+    return result
